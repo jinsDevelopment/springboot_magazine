@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity // 스프링 Security 필터가 스프링 필터 체인에 등록됨.
@@ -21,9 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final JwtTokenProvider jwtTokenProvider;
+	private final CorsFilter corsFilter;
 
-	public WebSecurityConfig(JwtTokenProvider jwtTokenProvider) {
+	public WebSecurityConfig(JwtTokenProvider jwtTokenProvider,
+		CorsFilter corsFilter) {
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.corsFilter = corsFilter;
 	}
 
 	@Bean
@@ -67,20 +71,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			// 회원 관리 처리 API 전부를 login 없이 허용
 			.antMatchers("/css/**").permitAll()
 			.antMatchers("/js/**").permitAll()
-
+			.antMatchers("/favicon.ico").permitAll()
 			.antMatchers("/").permitAll()
-			.antMatchers("/user/login").permitAll()
-			.antMatchers("/user/signup").permitAll()
+			.antMatchers("/api/user/**").permitAll()
 			// Get 요청 login 없이 허용
-			.antMatchers(HttpMethod.GET, "/api/post").permitAll()
+			.antMatchers(HttpMethod.GET, "/api/post/**").permitAll()
 			//antMatchers로 설정한 조건 외의 어떤 요청이든 '인증'해야 한다
 			.anyRequest().authenticated()
 			.and()
-//			.exceptionHandling()
-//			// "접근 불가" 설정
-//			.authenticationEntryPoint(authenticationEntryPoint())
-
-//			.and()
+			.exceptionHandling()
+			// "접근 불가" 설정
+			.authenticationEntryPoint(authenticationEntryPoint())
+			.and()
+			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
 	}

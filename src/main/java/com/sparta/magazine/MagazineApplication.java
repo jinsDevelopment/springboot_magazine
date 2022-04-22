@@ -40,6 +40,7 @@ public class MagazineApplication {
 //
 //			requestDTO.setContents("내용1");
 //			requestDTO.setImagePath("");
+//			requestDTO.setLayout("top");
 //			postService.postSave(requestDTO,username);
 //
 //		};

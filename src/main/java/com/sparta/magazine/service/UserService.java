@@ -33,14 +33,20 @@ public class UserService {
 	}
 
 	@Transactional
+	public Optional<User> dupCheckUserId(String userId) {
+		Optional<User> user = userRepository.findById(userId);
+		if (user.isPresent()) {
+			throw new RestException(HttpStatus.BAD_REQUEST, "중복된 사용자 ID 가 존재합니다.");
+		}
+		return user;
+	}
+
+	@Transactional
 	public void registerUser(SignupRequestDto requestDto) {
 
 		String userId = requestDto.getUsername();
 		// 회원 ID 중복 확인
-		Optional<User> found = userRepository.findById(userId);
-		if (found.isPresent()) {
-			throw new RestException(HttpStatus.BAD_REQUEST, "중복된 사용자 ID 가 존재합니다.");
-		}
+		this.dupCheckUserId(userId);
 
 		if (requestDto.passwordCheck(requestDto.getPassword(), requestDto.getUsername())) {
 			throw new RestException(HttpStatus.BAD_REQUEST, "비밀번호 내에 아이디를 포함할 수 없습니다.");
@@ -71,6 +77,7 @@ public class UserService {
 
 	@Transactional
 	public void logout(HttpServletRequest request){
+		//시큐리티 저장소를 clear
 		SecurityContextHolder.clearContext();
 	}
 

@@ -31,10 +31,13 @@ public class Posts extends Timestamped{
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String contents;
 
-	@Column(length = 255)
+	@Column(columnDefinition = "mediumtext")
 	private String imagePath;
 
-	@OneToMany(mappedBy="posts", cascade = CascadeType.ALL)
+	@Column(nullable = false)
+	private String layout;
+
+	@OneToMany(mappedBy="posts", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Likes> likes = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +46,7 @@ public class Posts extends Timestamped{
 	public Posts(PostRequestDto requestDto, String userId){
 		this.contents = requestDto.getContents();
 		this.imagePath = requestDto.getImagePath();
+		this.layout = requestDto.getLayout();
 		this.user = new User();
 		this.user.setId(userId);
 	}
@@ -50,6 +54,7 @@ public class Posts extends Timestamped{
 	public void update(PostRequestDto requestDto) {
 		this.imagePath = requestDto.getImagePath();
 		this.contents = requestDto.getContents();
+		this.layout = requestDto.getLayout();
 	}
 
 }

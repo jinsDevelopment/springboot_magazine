@@ -30,10 +30,10 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private String password;
 
-	@OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Posts> posts = new ArrayList<>();
 
-	@OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Likes> likes = new ArrayList<>();
 
 	@ElementCollection(fetch = FetchType.EAGER)

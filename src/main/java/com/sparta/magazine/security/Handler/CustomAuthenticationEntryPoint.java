@@ -21,11 +21,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException, ServletException {
-//		String exception = (String)request.getAttribute("exception");
-//		System.out.println("exception :: " + exception);
-//		if(exception == null){
-//			setResponse(response);
-//		}
+		String exception = (String)request.getAttribute("exception");
+		System.out.println("exception :: " + exception);
+		if(exception != null){
+			setResponse(response);
+		}
 
 
 		// 권한이 없을 경우 알려주는.. 401 에러
@@ -38,7 +38,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("message", "로그인 정보가 없습니다.");
-		responseJson.put("code", HttpStatus.OK);
+		responseJson.put("code", HttpStatus.UNAUTHORIZED);
 
 		response.getWriter().print(responseJson);
 	}

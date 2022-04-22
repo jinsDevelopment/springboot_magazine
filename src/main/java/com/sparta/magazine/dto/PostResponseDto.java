@@ -13,11 +13,13 @@ public class PostResponseDto {
 
 	private Long postId;
 
-	private String nickName;
+	private String nickname;
 
-	private String content;
+	private String contents;
 
 	private String imagePath;
+
+	private String layout;
 
 	private int likeCount;
 

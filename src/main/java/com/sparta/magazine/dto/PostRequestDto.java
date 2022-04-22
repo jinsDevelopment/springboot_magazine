@@ -12,4 +12,6 @@ public class PostRequestDto {
 
 	private String imagePath;
 
+	private String layout;
+
 }

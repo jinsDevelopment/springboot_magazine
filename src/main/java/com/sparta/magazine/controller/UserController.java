@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,12 +41,12 @@ public class UserController {
 		return "login";
 	}
 
-	@GetMapping("/user/signup")
+	@GetMapping("/api/user/signup")
 	public String signupForm() {
 		return "signup";
 	}
 
-	@PostMapping("/user/signup")
+	@PostMapping("/api/user/register")
 	@ResponseBody
 	public ResponseEntity<Success> signup(@RequestBody @Valid SignupRequestDto signupRequestDto, Errors errors) {
 
@@ -59,7 +60,17 @@ public class UserController {
 		return new ResponseEntity<>(new Success(true, "회원가입에 성공했습니다."), HttpStatus.OK);
 	}
 
-	@PostMapping("/user/login")
+
+	@GetMapping("/api/user/register/{username}")
+	@ResponseBody
+	public ResponseEntity<Success> dupCheckUserId(@PathVariable("username") String username) {
+		System.out.println(username);
+
+		userService.dupCheckUserId(username);
+		return new ResponseEntity<>(new Success(true, "사용 가능한 ID입니다."), HttpStatus.OK);
+	}
+
+	@PostMapping("/api/user/login")
 	@ResponseBody
 	public ResponseEntity<Success> login(@RequestBody LoginRequestDto requestDto,@AuthenticationPrincipal User user, HttpServletResponse response, Errors errors) {
 
@@ -74,19 +85,19 @@ public class UserController {
 
 		String token = userService.login(requestDto);
 
-		response.addHeader("Authorization", token);
+		response.setHeader("Authorization", token);
 
 		return new ResponseEntity<>(new Success(true, "로그인에 성공했습니다."), HttpStatus.OK);
 	}
 
-	@PostMapping("/user/logout")
+	@PostMapping("/api/user/logout")
 	@ResponseBody
 	public ResponseEntity<Success> logout(HttpServletRequest request) {
 		userService.logout(request);
 		return new ResponseEntity<>(new Success(true, "로그아웃 성공"), HttpStatus.OK);
 	}
 
-	@GetMapping("/user/info")
+	@GetMapping("/api/user/info")
 	@ResponseBody
 	public UserResponseDto userInfo(@AuthenticationPrincipal User user) {
 

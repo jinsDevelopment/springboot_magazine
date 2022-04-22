@@ -5,7 +5,6 @@ import com.sparta.magazine.dto.PostRequestDto;
 import com.sparta.magazine.dto.PostResponseDto;
 import com.sparta.magazine.model.Likes;
 import com.sparta.magazine.model.Posts;
-import com.sparta.magazine.model.User;
 import com.sparta.magazine.repository.PostRepository;
 import com.sparta.magazine.repository.LikesRepository;
 import com.sparta.magazine.repository.UserRepository;
@@ -34,6 +33,43 @@ public class PostService {
 	}
 
 	@Transactional
+	public PostResponseDto getBoardDetail(Long postId, String userId) {
+
+		PostResponseDto postResponseDto = new PostResponseDto();
+
+		Posts posts = postRepository.findById(postId).orElseThrow(
+			() -> new RestException(HttpStatus.NOT_FOUND, "해당 postId가 존재하지 않습니다.")
+		);
+
+		String nickname = userRepository.findById(posts.getUser().getId()).get().getNickname();
+		int likeCount = likesRepository.countAllByPosts_Id(posts.getId());
+		Boolean likesYn = false;
+
+		if (userId != null){
+
+			Optional<Likes> likes = likesRepository.findAllByPostsIdAndUserId(posts.getId(), userId);
+			if (!likes.isPresent()) {
+				likesYn = false;
+			} else {
+				likesYn = true;
+			}
+
+		}
+
+		postResponseDto.setPostId(postId);
+		postResponseDto.setNickname(nickname);
+		postResponseDto.setContents(posts.getContents());
+		postResponseDto.setImagePath(posts.getImagePath());
+		postResponseDto.setLikeCount(likeCount);
+		postResponseDto.setLiked(likesYn);
+		postResponseDto.setCreatedAt(posts.getCreatedAt());
+		postResponseDto.setModifiedAt(posts.getModifiedAt());
+		postResponseDto.setLayout(posts.getLayout());
+
+		return postResponseDto;
+	}
+
+	@Transactional
 	public List<PostResponseDto> getBoardAll() {
 
 		List<PostResponseDto> postResponseDtoList = new ArrayList<>();
@@ -46,13 +82,14 @@ public class PostService {
 			String nickname = userRepository.findById(posts.getUser().getId()).get().getNickname();
 			int likeCount = likesRepository.countAllByPosts_Id(posts.getId());
 			postResponseDto.setPostId(posts.getId());
-			postResponseDto.setNickName(nickname);
-			postResponseDto.setContent(posts.getContents());
+			postResponseDto.setNickname(nickname);
+			postResponseDto.setContents(posts.getContents());
 			postResponseDto.setImagePath(posts.getImagePath());
 			postResponseDto.setLikeCount(likeCount);
 			postResponseDto.setLiked(false);
 			postResponseDto.setCreatedAt(posts.getCreatedAt());
 			postResponseDto.setModifiedAt(posts.getModifiedAt());
+			postResponseDto.setLayout(posts.getLayout());
 			postResponseDtoList.add(postResponseDto);
 
 		}
@@ -73,20 +110,22 @@ public class PostService {
 			String nickname = userRepository.findById(posts.getUser().getId()).get().getNickname();
 			int likeCount = likesRepository.countAllByPosts_Id(posts.getId());
 			Boolean likesYn = false;
-			Optional<Likes> likes = likesRepository.findAllByPostsIdAndUserId(posts.getId(), userId);
+			Optional<Likes> likes = likesRepository.findAllByPostsIdAndUserId(posts.getId(),
+				userId);
 			if (!likes.isPresent()) {
 				likesYn = false;
 			} else {
 				likesYn = true;
 			}
 			postResponseDto.setPostId(posts.getId());
-			postResponseDto.setNickName(nickname);
-			postResponseDto.setContent(posts.getContents());
+			postResponseDto.setNickname(nickname);
+			postResponseDto.setContents(posts.getContents());
 			postResponseDto.setImagePath(posts.getImagePath());
 			postResponseDto.setLikeCount(likeCount);
 			postResponseDto.setLiked(likesYn);
 			postResponseDto.setCreatedAt(posts.getCreatedAt());
 			postResponseDto.setModifiedAt(posts.getModifiedAt());
+			postResponseDto.setLayout(posts.getLayout());
 			postResponseDtoList.add(postResponseDto);
 
 		}

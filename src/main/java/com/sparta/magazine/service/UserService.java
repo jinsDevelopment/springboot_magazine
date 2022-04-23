@@ -34,6 +34,11 @@ public class UserService {
 
 	@Transactional
 	public Optional<User> dupCheckUserId(String userId) {
+
+		if(userId == "null" || userId == null){
+			throw new RestException(HttpStatus.BAD_REQUEST, "사용할 수 없는 ID 입니다.");
+		}
+
 		Optional<User> user = userRepository.findById(userId);
 		if (user.isPresent()) {
 			throw new RestException(HttpStatus.BAD_REQUEST, "중복된 사용자 ID 가 존재합니다.");
@@ -42,7 +47,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public void registerUser(SignupRequestDto requestDto) {
+	public User registerUser(SignupRequestDto requestDto) {
 
 		String userId = requestDto.getUsername();
 		// 회원 ID 중복 확인
@@ -62,6 +67,7 @@ public class UserService {
 
 		User user = new User(userId, nickname, password, Collections.singletonList("ROLE_USER"));
 		userRepository.save(user);
+		return user;
 	}
 	@Transactional
 	public String login(LoginRequestDto requestDto) {

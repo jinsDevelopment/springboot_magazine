@@ -35,8 +35,6 @@ public class PostService {
 	@Transactional
 	public PostResponseDto getBoardDetail(Long postId, String userId) {
 
-		PostResponseDto postResponseDto = new PostResponseDto();
-
 		Posts posts = postRepository.findById(postId).orElseThrow(
 			() -> new RestException(HttpStatus.NOT_FOUND, "해당 postId가 존재하지 않습니다.")
 		);
@@ -56,15 +54,17 @@ public class PostService {
 
 		}
 
-		postResponseDto.setPostId(postId);
-		postResponseDto.setNickname(nickname);
-		postResponseDto.setContents(posts.getContents());
-		postResponseDto.setImagePath(posts.getImagePath());
-		postResponseDto.setLikeCount(likeCount);
-		postResponseDto.setLiked(likesYn);
-		postResponseDto.setCreatedAt(posts.getCreatedAt());
-		postResponseDto.setModifiedAt(posts.getModifiedAt());
-		postResponseDto.setLayout(posts.getLayout());
+		PostResponseDto postResponseDto = new PostResponseDto(
+			postId,
+			nickname,
+			posts.getContents(),
+			posts.getImagePath(),
+			posts.getLayout(),
+			likeCount,
+			likesYn,
+			posts.getCreatedAt(),
+			posts.getModifiedAt()
+			);
 
 		return postResponseDto;
 	}
@@ -133,29 +133,43 @@ public class PostService {
 	}
 
 	@Transactional
-	public void postSave(PostRequestDto postRequestDto, String userId) {
+	public Posts postSave(PostRequestDto postRequestDto, String userId) {
 		userRepository.findById(userId).orElseThrow(
-			() -> new RestException(HttpStatus.NOT_FOUND, "해당 postId가 존재하지 않습니다.")
+			() -> new RestException(HttpStatus.NOT_FOUND, "해당 userId가 존재하지 않습니다.")
 		);
 
 		Posts posts = new Posts(postRequestDto, userId);
 		postRepository.save(posts);
+
+		return posts;
 	}
 
 	@Transactional
-	public void delete(Long postId) {
-		postRepository.deleteById(postId);
-	}
-
-	@Transactional
-	public void modify(Long postId, PostRequestDto requestDto, String userId) {
+	public void delete(Long postId,String userId) {
 		Posts post = postRepository.findById(postId).orElseThrow(
-			() -> new RestException(HttpStatus.NOT_FOUND, "해당 postId가 존재하지 않습니다.")
+			() -> new RestException(HttpStatus.BAD_REQUEST, "해당 postId가 존재하지 않습니다.")
+		);
+
+		if (post.getUser().getId().equals(userId)){
+			postRepository.deleteById(postId);
+		}else {
+			throw new RestException(HttpStatus.BAD_REQUEST, "userId가 일치하지 않습니다.");
+		}
+
+
+	}
+
+	@Transactional
+	public Posts modify(Long postId, PostRequestDto requestDto, String userId) {
+		Posts post = postRepository.findById(postId).orElseThrow(
+			() -> new RestException(HttpStatus.BAD_REQUEST, "해당 postId가 존재하지 않습니다.")
 		);
 		if (post.getUser().getId().equals(userId)) {
 			post.update(requestDto);
 		} else {
 			throw new RestException(HttpStatus.BAD_REQUEST, "userId가 일치하지 않습니다.");
 		}
+
+		return post;
 	}
 }

@@ -2,13 +2,17 @@ package com.sparta.magazine.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostResponseDto {
 
 	private Long postId;

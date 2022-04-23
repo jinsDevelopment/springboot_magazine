@@ -10,6 +10,7 @@ import com.sparta.magazine.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import org.junit.Assert;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -57,6 +58,7 @@ public class UserController {
 		}
 
 		userService.registerUser(signupRequestDto);
+
 		return new ResponseEntity<>(new Success(true, "회원가입에 성공했습니다."), HttpStatus.OK);
 	}
 
@@ -64,7 +66,6 @@ public class UserController {
 	@GetMapping("/api/user/register/{username}")
 	@ResponseBody
 	public ResponseEntity<Success> dupCheckUserId(@PathVariable("username") String username) {
-		System.out.println(username);
 
 		userService.dupCheckUserId(username);
 		return new ResponseEntity<>(new Success(true, "사용 가능한 ID입니다."), HttpStatus.OK);

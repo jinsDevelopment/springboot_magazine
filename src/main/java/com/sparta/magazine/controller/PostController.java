@@ -87,8 +87,8 @@ public class PostController {
 	}
 
 	@DeleteMapping("/post/{postId}")
-	public ResponseEntity<Success> deletePost(@PathVariable Long postId) {
-		postService.delete(postId);
+	public ResponseEntity<Success> deletePost(@PathVariable Long postId,@AuthenticationPrincipal User user) {
+		postService.delete(postId, user.getId());
 		return new ResponseEntity<>(new Success(true, "게시글 삭제 성공"), HttpStatus.OK);
 	}
 

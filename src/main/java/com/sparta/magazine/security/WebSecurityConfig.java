@@ -65,7 +65,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.formLogin().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
-			// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
 			//요청에 의한 보안검사 시작
 			.authorizeRequests()
 			// 회원 관리 처리 API 전부를 login 없이 허용
@@ -79,11 +78,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			//antMatchers로 설정한 조건 외의 어떤 요청이든 '인증'해야 한다
 			.anyRequest().authenticated()
 			.and()
+			// 시큐리티 예외처리
 			.exceptionHandling()
-			// "접근 불가" 설정
 			.authenticationEntryPoint(authenticationEntryPoint())
 			.and()
 			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+			// JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
 			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
 	}

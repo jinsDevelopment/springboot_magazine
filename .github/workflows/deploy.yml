@@ -81,4 +81,4 @@ jobs:
       run: aws s3 cp --region ${{ secrets.CLOUD_AWS_REGION_STATIC }} --acl private ./springboot-build.zip s3://coffee-deploy-99/
       
     - name: CodeDeploy
-      run: aws deploy create-deployment --application-name springboot-codedeploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name springboot-deploy-group --s3-location bucket=springboot-deploy,bundleType=zip,key=springboot-build.zip
+      run: aws deploy create-deployment --application-name springboot-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name springboot-deploy-group --s3-location bucket=springboot-deploy,bundleType=zip,key=springboot-build.zip

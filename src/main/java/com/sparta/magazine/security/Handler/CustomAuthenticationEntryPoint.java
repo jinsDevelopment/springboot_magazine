@@ -17,7 +17,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	protected static final Log LOG = LogFactory.getLog(CustomAuthenticationEntryPoint.class);
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException, ServletException {
